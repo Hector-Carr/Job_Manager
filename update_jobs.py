@@ -1,12 +1,12 @@
 import sys
 import os
+import importlib
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import jobs_db
 
-from scrapers import seek
-from jobs_db import add_jobs
+IMPORT_DIR = "job_finders"
 
-def query_():
+def query_update():
     while True:
         update = input("do you want to update jobs listings? [y/n]: ")
 
@@ -22,19 +22,37 @@ def start_update():
     print("=" * 40)
     
     total_jobs = 0
-    
-    print("\nRunning seek scraper...")
-    try:
-        jobs = seek.scrape()
-        print(f"  Got {len(jobs)} jobs")
-        add_jobs(jobs)
-        print(f"  Added {len(jobs)} jobs to database")
-        total_jobs += len(jobs)
-    except Exception as e:
-        print(f"  Error: {e}")
-    
-    print("\n" + "=" * 40)
-    print(f"Update complete. Total jobs added: {total_jobs}")
+
+    # find files with job getters
+    os.makedirs(IMPORT_DIR, exist_ok=True)
+    files = os.listdir(IMPORT_DIR)
+
+    # get all jobs from them
+    for f in files:
+        if f == "__pycache__":
+            continue
+
+        print(f"trying to get from {f}")
+        try:
+            module = f.strip(".py")
+            module = importlib.import_module(f"{IMPORT_DIR}.{f.strip('.py')}")
+            
+            Q = getattr(module, "QUERYS")
+            get = getattr(module, "get")
+
+            jobs = []
+
+            for q in Q:
+                jobs += get(*q)
+            
+            n = jobs_db.add_jobs(jobs)
+
+            print(f"\nadded {n} new jobs to the database")
+
+        except Exception as e:
+            print(f"{f} failed with {e}")
+
+        print("Done")
 
 if __name__ == "__main__":
     start_update()

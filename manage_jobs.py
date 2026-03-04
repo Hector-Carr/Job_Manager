@@ -2,13 +2,10 @@ import sqlite3
 import subprocess
 import curses
 import os
-import importlib
 import time
 from jobs_db import DB_PATH
 
-#from "update_jobs" import query_ as "query_update"
-module = importlib.import_module("update_jobs")
-query_update = getattr(module, "query_")                                                                                                                                                                                                                                                                                    
+from update_jobs import query_update
 
 def get_jobs_by_status(status_filter=None):
     conn = sqlite3.connect(DB_PATH)
@@ -199,5 +196,5 @@ def main(stdscr):
             break
 
 if __name__ == "__main__":
-    #query_update()
+    query_update()
     curses.wrapper(main)

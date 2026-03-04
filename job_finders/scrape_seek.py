@@ -6,6 +6,10 @@ from selenium.webdriver.common.keys import Keys
 import time
 import json
 
+QUERYS = [
+    ["https://www.seek.com.au/jobs-in-information-communication-technology/in-Brisbane-QLD-4000?subclassification=6287%2C6290%2C6302"],
+]
+
 def setup_driver():
     options = Options()
     options.add_argument("--headless")
@@ -17,7 +21,7 @@ def setup_driver():
     driver = webdriver.Firefox(options=options, service=service)
     return driver
 
-def scrape_seek_jobs(url, max_pages=20):
+def get(url, max_pages=20):
     driver = setup_driver()
     all_jobs = []
     
@@ -60,7 +64,6 @@ def scrape_seek_jobs(url, max_pages=20):
                             "reference_url": job_url.split("?")[0],
                             "job_title": title,
                             "company": company,
-                            "status": "pending"
                         }
                         all_jobs.append(job)
                         page_jobs += 1
