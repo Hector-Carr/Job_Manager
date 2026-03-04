@@ -143,9 +143,6 @@ def main(stdscr):
     start_idx = 0
     jobs = get_jobs_by_status(status_filter)
     
-    last_click_time = 0
-    last_click_y = -3
-    
     while True:
         height, width = stdscr.getmaxyx()
         jobs = get_jobs_by_status(status_filter if status_filter != "All" else None)
@@ -165,7 +162,7 @@ def main(stdscr):
 
         elif key == curses.KEY_DOWN:
             selected += 1
-            if selected >= visible_rows:
+            if selected >= visible_rows or selected > len(jobs)-1:
                 selected -= 1
                 start_idx = min(len(jobs)-visible_rows, start_idx+1)
                 
