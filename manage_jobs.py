@@ -3,9 +3,10 @@ import subprocess
 import curses
 import os
 import time
-from jobs_db import DB_PATH
 
+from jobs_db import DB_PATH
 from update_jobs import query_update
+from cover_letters import main as cover_letter_loop
 
 def get_jobs_by_status(status_filter=None):
     conn = sqlite3.connect(DB_PATH)
@@ -29,7 +30,9 @@ def update_status(reference_url, status):
 def open_in_firefox(url):
     subprocess.Popen(["firefox", "--new-window", url])
 
-def write_cover_letter(company, job_title):
+def write_cover_letter(stdscr):
+    
+    return "foo bar"
     filename = f"cover_letter_{company.replace(' ', '_')}.txt"
     with open(filename, "w") as f:
         f.write(f"Dear Hiring Manager,\n\n")
@@ -115,9 +118,10 @@ def job_detail_menu(stdscr, job):
             if selected == 0:
                 open_in_firefox(reference_url)
             elif selected == 1:
-                filename = write_cover_letter(company, job_title)
-                stdscr.addstr(height - 1, 0, f"Created {filename}")
-                stdscr.getch()
+                #filename = write_cover_letter(company, job_title)
+                coverr_letter = cover_letter_loop(stdscr, reference_url)
+                #stdscr.addstr(height - 1, 0, f"Created {filename}")
+                #stdscr.getch()
             elif selected == 2:
                 update_status(reference_url, "applied")
                 return "applied"
@@ -193,5 +197,5 @@ def main(stdscr):
             break
 
 if __name__ == "__main__":
-    query_update()
+    #query_update()
     curses.wrapper(main)

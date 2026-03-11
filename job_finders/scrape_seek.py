@@ -7,7 +7,9 @@ import time
 import json
 
 QUERYS = [
-    ["https://www.seek.com.au/jobs-in-information-communication-technology/in-Brisbane-QLD-4000?subclassification=6287%2C6290%2C6302"],
+    ["https://www.seek.com.au/jobs-in-information-communication-technology/in-Brisbane-QLD-4000?distance=100&subclassification=6287%2C6290%2C6302%2C6291%2C6286%2C6293"],
+    ["https://www.seek.com.au/jobs-in-information-communication-technology/in-Cooroy-QLD-4563?distance=50&subclassification=6287%2C6290%2C6302%2C6291%2C6286%2C6293"],
+    ["https://www.seek.com.au/jobs-in-information-communication-technology/in-Surfers-Paradise-QLD-4217?distance=50&subclassification=6287%2C6290%2C6302%2C6291%2C6286%2C6293"],
 ]
 
 def setup_driver():
