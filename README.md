@@ -5,7 +5,8 @@ Project to streamline applying to jobs on multiple sites.
 ![example screen](images/main.png)
 
 Takes outputs from python files in job_finders and displays them in a curses-based frontend to organize and help apply for jobs, semi-autonomously generating cover letters.
-This project was designed with ai in mind, obviously with the generating of cover letters, but also the general design of the project. The files in job_finders, are intended to be almost fully vibe coded, so the design of the project reflects quarantining mostly usupervised code and fails gracefully when ai messes up. The mojority of the rest of the project was also generated with ai, however this is higher trust code, as every line ahs been looked at and most have been refactored into a somewhat consistent codebase.
+
+This project was designed with ai in mind, obviously with the generating of cover letters, but also the general design of the project. The files in job_finders, are intended to be almost fully vibe coded, so the design of the project reflects quarantining mostly usupervised code and fails gracefully when ai messes up. The mojority of the rest of the project was also generated with ai, however this is higher trust code, as every line has been looked at and most have been refactored into a somewhat consistent codebase.
 
 ## Using This
 
@@ -28,7 +29,8 @@ FULL_NAME=Your Name
 EMAIL=your@email.com
 ```
 If you dont want to create cover letters than this step is unnecessary
-The TERMINAL and EDITOR fields represent commands and arguments to be passed to subprocess, an example can be seen in example_env, currently supported formats for resumes are .pdf and .txt, i reccomend txt, as you can simplify the formating to reduce unnecessary tokens bing used. The process of generating a cover letter is quite involved, this is somewhat intentional to reduce errors, and to give the usser an opportunity to personally evaluate the job listing and the generated cover letter.
+
+The TERMINAL and EDITOR fields represent commands and arguments to be passed to subprocess, an example can be seen in example_env, currently supported formats for resumes are .pdf and .txt, i reccomend txt, as you can simplify the formating to reduce unnecessary tokens being used. The process of generating a cover letter is quite involved, this is intentional to reduce errors, and to give the usser an opportunity to personally evaluate the job listing and the generated cover letter.
 
 finally simply run the manage_jobs.py script and get going
 ```bash
