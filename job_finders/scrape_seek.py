@@ -76,7 +76,7 @@ def get(url, max_pages=20):
             print(f"{page_jobs} jobs", end="", flush=True)
             
             try:
-                next_link = driver.find_element(By.CSS_SELECTOR, "li._6wfnkxbd > a:nth-child(1)")
+                next_link = driver.find_element(By.CSS_SELECTOR, "li._36523fbd > a:nth-child(1) > span:nth-child(1)")
                 next_link.click()
                 time.sleep(3)
                 print(" -> ", end="", flush=True)

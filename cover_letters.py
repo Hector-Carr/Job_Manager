@@ -80,7 +80,7 @@ def read_resume(path) -> str:
 
 def latexify(content) -> str:
     ## TODO: make this better, it is bad and only catches common exmples
-    safe_content = content.replace("&", "\\&").replace("#", "//#")
+    safe_content = content.replace("&", "\\&").replace("#", "\\#")
 
     return COVER_START + safe_content + COVER_END
 
@@ -94,7 +94,7 @@ def generate_cover_letter(resume_text, job_description) -> str:
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt}
         ],
-        #temperature=1,
+        #temperature=0.9,
     )
 
     return response.choices[0].message.content
