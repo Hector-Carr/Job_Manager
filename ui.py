@@ -39,7 +39,6 @@ class app:
             elif key in [curses.KEY_LEFT, ord("h")]: self.cycle_filter(-1)
             elif key in [curses.KEY_NPAGE]: self.select(self.ln_visable)
             elif key in [curses.KEY_PPAGE]: self.select(-self.ln_visable)
-            #elif key in [curses.KEY_ENTER]: self.job_details_menu()
             elif key in [ord('\n')]: self.job_details_menu()
             elif key in [27, ord("q"), ord("Q")]: break
 
