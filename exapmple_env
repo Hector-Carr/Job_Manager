@@ -1,0 +1,7 @@
+RESUME_PATH="/home/hector/personal_admin/current_resume.txt"
+COVER_SAVE_PATH="/home/hector/personal_admin/latest_cover_letter.pdf"
+OPENAI_API_KEY=""
+TERMINAL=["alacritty", "-e"]
+EDITOR=["nvim"]
+FULL_NAME="Hector Carr"
+EMAIL="hcarr1103@gmail.com"
