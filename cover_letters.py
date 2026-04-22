@@ -45,6 +45,16 @@ COVER_START = """\\documentclass[11pt]{letter}
 \\usepackage[T1]{fontenc}
 \\usepackage{microtype}
 
+\\usepackage{hyperref}
+\\usepackage{xcolor}
+
+\\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
 \\begin{document}
 
 Dear Hiring Manager,
