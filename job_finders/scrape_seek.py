@@ -19,7 +19,7 @@ def setup_driver():
     options.add_argument("--height=1080")
     options.set_preference("general.useragent.override", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv=109.0) Gecko/20100101 Firefox/115.0")
     
-    service = Service(executable_path="/usr/bin/geckodriver")
+    service = Service(executable_path="/usr/local/bin/geckodriver")
     driver = webdriver.Firefox(options=options, service=service)
     return driver
 
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     
     print("Starting Seek job scraper...")
     print("=" * 50)
-    jobs = scrape_seek_jobs(url, max_pages=20)
+    jobs = get(url, max_pages=20)
     print(jobs)
     exit()
     

@@ -1,8 +1,9 @@
 from dotenv import load_dotenv
 import subprocess
+import sys
 import PyPDF2
 import os
-from openai import OpenAI
+from anthropic import Anthropic
 
 load_dotenv()
 RESUME_PATH = os.getenv("RESUME_PATH")
@@ -95,19 +96,19 @@ def latexify(content) -> str:
     return COVER_START + safe_content + COVER_END
 
 def generate_cover_letter(resume_text, job_description) -> str:
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
     user_prompt = USER_PROMPT.format(resume_text=resume_text, job_description=job_description)
 
-    response = client.chat.completions.create(
-        model="gpt-5",
+    response = client.messages.create(
+        model="claude-opus-4-7",
+        max_tokens=4096,
+        system=SYSTEM_PROMPT,
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt}
         ],
-        #temperature=0.9,
     )
 
-    return response.choices[0].message.content
+    return response.content[0].text
 
 ########### main workflow and loop ###########
 def main(stdscr, uniq):

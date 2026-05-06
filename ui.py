@@ -40,6 +40,7 @@ class app:
             elif key in [curses.KEY_NPAGE]: self.select(self.ln_visable)
             elif key in [curses.KEY_PPAGE]: self.select(-self.ln_visable)
             elif key in [ord('\n')]: self.job_details_menu()
+            elif key in [ord('d'), ord("D")]: self.update_current_status("excluded") 
             elif key in [27, ord("q"), ord("Q")]: break
 
     def select(self, delta):
@@ -87,7 +88,7 @@ class app:
         self.stdscr.addstr(self.my - 1, 0, "[Enter] select [←→] filter [↑↓] scroll [Esc/q] quit"[:self.mx], curses.A_DIM)
         
         if not self.jobs:
-            stdscr.addstr(start_row, 0, "No jobs found")
+            self.stdscr.addstr(start_row, 0, "No jobs found")
             return  
         
         # loop through each line and display job or just clean
@@ -110,8 +111,15 @@ class app:
         subprocess.Popen(["firefox", "--new-window", self.jobs[self.start_idx + self.selected]["url"]])
 
     def update_current_status(self, new_status):
-        if new_status != self.status:
-            job = self.jobs.pop(self.start_idx + self.selected)
+        if self.status_filter == 3:
+            job = self.jobs[self.start_idx + self.selected]
+            update_status(job['url'], new_status)
+            
+            job["status"] = new_status
+            self.jobs[self.start_idx + self.selected] = job
+            
+        elif new_status != self.status:
+            job = self.jobs.pop(self.start_idx + self.selected) 
             update_status(job['url'], new_status)
 
     def job_details_menu(self):
@@ -142,6 +150,9 @@ class app:
             
             if   key in [curses.KEY_UP, ord("k")]: selected = (selected - 1) % len(options)
             elif key in [curses.KEY_DOWN, ord("j")]: selected = (selected + 1) % len(options)
+            elif key in [ord('d'), ord("D")]: 
+                self.update_current_status("excluded") 
+                return
             elif key in [ord('\n'), curses.KEY_ENTER, 10, 13]:
                 if   selected == 0: self.open_current_in_browser()
                 elif selected == 1: cover_letter_loop(self.stdscr, job['url'])
