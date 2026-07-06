@@ -1,8 +1,28 @@
 import curses
 import subprocess
+from datetime import datetime
 
-from jobs_db import get_jobs_by_status, update_status 
+from jobs_db import get_jobs_by_status, update_status
 from cover_letters import main as cover_letter_loop
+
+
+def format_posted_at(iso):
+    if not iso:
+        return ""
+    try:
+        dt = datetime.fromisoformat(iso)
+    except ValueError:
+        return ""
+    delta = datetime.now() - dt
+    d = delta.days
+    if d <= 0:
+        h = delta.seconds // 3600
+        return f"{h}h ago" if h else "just now"
+    if d < 7:
+        return f"{d}d ago"
+    if d < 30:
+        return f"{d // 7}w ago"
+    return iso[:10]
 
 class app:
     def __init__(self):
@@ -87,7 +107,7 @@ class app:
         self.stdscr.addstr(self.my - 1, 0, "[Enter] select [←→] filter [↑↓] scroll [Esc/q] quit"[:self.mx], curses.A_DIM)
         
         if not self.jobs:
-            stdscr.addstr(start_row, 0, "No jobs found")
+            self.stdscr.addstr(start_row, 0, "No jobs found")
             return  
         
         # loop through each line and display job or just clean
@@ -101,7 +121,10 @@ class app:
 
                 self.stdscr.addstr(y, 0, clean, status_color)
                 self.stdscr.addstr(y, 0, f"{prefix} {job['title'][:(self.mx//3)*2-2]}", status_color)
-                self.stdscr.addstr(y, (self.mx//3)*2, f"| {job['company'][:self.mx//3-2]}", status_color)
+                self.stdscr.addstr(y, (self.mx//3)*2, f"| {job['company'][:self.mx//3-12]}", status_color)
+                posted = format_posted_at(job.get('posted_at'))
+                if posted:
+                    self.stdscr.addstr(y, self.mx - 10, posted[:9], status_color)
 
             else:
                 self.stdscr.addstr(y, 0, clean)

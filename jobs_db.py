@@ -12,9 +12,15 @@ def init_db():
             job_title TEXT NOT NULL,
             company TEXT NOT NULL,
             status TEXT DEFAULT 'pending',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            posted_at TIMESTAMP
         )
     """)
+
+    cursor.execute("PRAGMA table_info(jobs)")
+    cols = {row[1] for row in cursor.fetchall()}
+    if "posted_at" not in cols:
+        cursor.execute("ALTER TABLE jobs ADD COLUMN posted_at TIMESTAMP")
 
     conn.commit()
     conn.close()
@@ -25,8 +31,8 @@ def add_jobs(jobs):
     cursor = conn.cursor()
 
     cursor.executemany(
-        "INSERT OR IGNORE INTO jobs (reference_url, job_title, company, status) VALUES (?, ?, ?, ?)",
-        [(j["reference_url"], j["job_title"], j["company"], j.get("status", "pending")) for j in jobs]
+        "INSERT OR IGNORE INTO jobs (reference_url, job_title, company, status, posted_at) VALUES (?, ?, ?, ?, ?)",
+        [(j["reference_url"], j["job_title"], j["company"], j.get("status", "pending"), j.get("posted_at")) for j in jobs]
     )
 
     conn.commit()
@@ -41,14 +47,14 @@ def get_jobs_by_status(status_filter="%"):
     conn = sqlite3.connect(DB_PATH)
     
     cursor = conn.execute(
-        "SELECT reference_url, job_title, company, status FROM jobs WHERE status LIKE ? ORDER BY rowid DESC",
+        "SELECT reference_url, job_title, company, status, posted_at FROM jobs WHERE status LIKE ? ORDER BY posted_at IS NULL, posted_at DESC, rowid DESC",
         (status_filter,)
     )
 
     jobs = cursor.fetchall()
 
     conn.close()
-    return [{"url":job[0], "title":job[1], "company":job[2], "status":job[3]} for job in jobs] # anotate in dict and return
+    return [{"url":job[0], "title":job[1], "company":job[2], "status":job[3], "posted_at":job[4]} for job in jobs] # anotate in dict and return
 
 def update_status(reference_url, status):
     conn = sqlite3.connect(DB_PATH)

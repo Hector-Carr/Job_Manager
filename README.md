@@ -44,6 +44,7 @@ jobs = [{
     "job_title": title for the job
     "company": company
     "status": (optional) status of the job, defaults to pending, values can be [pending, excluded, applied]
+    "posted_at": (optional) ISO 8601 timestamp of when the job was posted on the source site
 }]
 ```
 The variable QUERYS, represents variables to be passed to get. this is in the form of a list of lists to be unpacked with *keys. For example if get had one argument url, QUERYS could look like:
