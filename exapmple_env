@@ -5,3 +5,7 @@ TERMINAL=["alacritty", "-e"]
 EDITOR=["nvim"]
 FULL_NAME="Hector Carr"
 EMAIL="hcarr1103@gmail.com"
+
+# optional, leave blank to keep the database local to this machine
+TURSO_URL="libsql://your-db-your-org.aws-ap-southeast-2.turso.io"
+TURSO_TOKEN=""
