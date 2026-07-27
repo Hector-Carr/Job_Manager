@@ -1,8 +1,28 @@
 import curses
 import subprocess
+from datetime import datetime
 
-from jobs_db import get_jobs_by_status, update_status 
+from jobs_db import get_jobs_by_status, update_status
 from cover_letters import main as cover_letter_loop
+
+
+def format_posted_at(iso):
+    if not iso:
+        return ""
+    try:
+        dt = datetime.fromisoformat(iso)
+    except ValueError:
+        return ""
+    delta = datetime.now() - dt
+    d = delta.days
+    if d <= 0:
+        h = delta.seconds // 3600
+        return f"{h}h ago" if h else "just now"
+    if d < 7:
+        return f"{d}d ago"
+    if d < 30:
+        return f"{d // 7}w ago"
+    return iso[:10]
 
 class app:
     def __init__(self):
@@ -40,6 +60,7 @@ class app:
             elif key in [curses.KEY_NPAGE]: self.select(self.ln_visable)
             elif key in [curses.KEY_PPAGE]: self.select(-self.ln_visable)
             elif key in [ord('\n')]: self.job_details_menu()
+            elif key in [ord("d"), ord("D"), curses.KEY_DC]: self.exclude_current()
             elif key in [27, ord("q"), ord("Q")]: break
 
     def select(self, delta):
@@ -84,10 +105,10 @@ class app:
         # write footer
         self.stdscr.addstr(self.my - 2, 0, clean)
         self.stdscr.addstr(self.my - 1, 0, clean[:-1]) # breaks things for no reason
-        self.stdscr.addstr(self.my - 1, 0, "[Enter] select [←→] filter [↑↓] scroll [Esc/q] quit"[:self.mx], curses.A_DIM)
+        self.stdscr.addstr(self.my - 1, 0, "[Enter] select [d/Del] exclude [←→] filter [↑↓] scroll [Esc/q] quit"[:self.mx], curses.A_DIM)
         
         if not self.jobs:
-            stdscr.addstr(start_row, 0, "No jobs found")
+            self.stdscr.addstr(start_row, 0, "No jobs found")
             return  
         
         # loop through each line and display job or just clean
@@ -101,7 +122,10 @@ class app:
 
                 self.stdscr.addstr(y, 0, clean, status_color)
                 self.stdscr.addstr(y, 0, f"{prefix} {job['title'][:(self.mx//3)*2-2]}", status_color)
-                self.stdscr.addstr(y, (self.mx//3)*2, f"| {job['company'][:self.mx//3-2]}", status_color)
+                self.stdscr.addstr(y, (self.mx//3)*2, f"| {job['company'][:self.mx//3-12]}", status_color)
+                posted = format_posted_at(job.get('posted_at'))
+                if posted:
+                    self.stdscr.addstr(y, self.mx - 10, posted[:9], status_color)
 
             else:
                 self.stdscr.addstr(y, 0, clean)
@@ -113,6 +137,12 @@ class app:
         if new_status != self.status:
             job = self.jobs.pop(self.start_idx + self.selected)
             update_status(job['url'], new_status)
+
+    def exclude_current(self):
+        if not self.jobs:
+            return
+        self.update_current_status("excluded")
+        self.select(0)  # clamp selection in case the last job was removed
 
     def job_details_menu(self):
         job = self.jobs[self.start_idx + self.selected]
@@ -137,7 +167,9 @@ class app:
             for i, opt in enumerate(options):
                 prefix = ">" if i == selected else " "
                 self.stdscr.addstr(i + 3, 0, f"{prefix} {opt}")
-            
+
+            self.stdscr.addstr(len(options) + 4, 0, "[Enter] select [d/Del] exclude [↑↓] move [Esc/q] back"[:self.mx - 1], curses.A_DIM)
+
             key = self.stdscr.getch()
             
             if   key in [curses.KEY_UP, ord("k")]: selected = (selected - 1) % len(options)
@@ -155,6 +187,9 @@ class app:
                     self.update_current_status("pending")
                     return
                 elif selected == 5: return None
+            elif key in [ord("d"), ord("D"), curses.KEY_DC]:
+                self.exclude_current()
+                return
             elif key in [27, ord("q"), ord("Q")]: return None
 
 

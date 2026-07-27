@@ -3,3 +3,8 @@ __pycache__
 job_finders/__pycache__
 .env
 .cover_letter_backup
+jobs.db
+jobs.db-*
+jobs.db.*.bak
+.tmp_cover.pdf
+tmp_cover.tex
