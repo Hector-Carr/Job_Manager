@@ -60,6 +60,7 @@ class app:
             elif key in [curses.KEY_NPAGE]: self.select(self.ln_visable)
             elif key in [curses.KEY_PPAGE]: self.select(-self.ln_visable)
             elif key in [ord('\n')]: self.job_details_menu()
+            elif key in [ord("d"), ord("D"), curses.KEY_DC]: self.exclude_current()
             elif key in [27, ord("q"), ord("Q")]: break
 
     def select(self, delta):
@@ -104,7 +105,7 @@ class app:
         # write footer
         self.stdscr.addstr(self.my - 2, 0, clean)
         self.stdscr.addstr(self.my - 1, 0, clean[:-1]) # breaks things for no reason
-        self.stdscr.addstr(self.my - 1, 0, "[Enter] select [←→] filter [↑↓] scroll [Esc/q] quit"[:self.mx], curses.A_DIM)
+        self.stdscr.addstr(self.my - 1, 0, "[Enter] select [d/Del] exclude [←→] filter [↑↓] scroll [Esc/q] quit"[:self.mx], curses.A_DIM)
         
         if not self.jobs:
             self.stdscr.addstr(start_row, 0, "No jobs found")
@@ -137,6 +138,12 @@ class app:
             job = self.jobs.pop(self.start_idx + self.selected)
             update_status(job['url'], new_status)
 
+    def exclude_current(self):
+        if not self.jobs:
+            return
+        self.update_current_status("excluded")
+        self.select(0)  # clamp selection in case the last job was removed
+
     def job_details_menu(self):
         job = self.jobs[self.start_idx + self.selected]
         
@@ -160,7 +167,9 @@ class app:
             for i, opt in enumerate(options):
                 prefix = ">" if i == selected else " "
                 self.stdscr.addstr(i + 3, 0, f"{prefix} {opt}")
-            
+
+            self.stdscr.addstr(len(options) + 4, 0, "[Enter] select [d/Del] exclude [↑↓] move [Esc/q] back"[:self.mx - 1], curses.A_DIM)
+
             key = self.stdscr.getch()
             
             if   key in [curses.KEY_UP, ord("k")]: selected = (selected - 1) % len(options)
@@ -178,6 +187,9 @@ class app:
                     self.update_current_status("pending")
                     return
                 elif selected == 5: return None
+            elif key in [ord("d"), ord("D"), curses.KEY_DC]:
+                self.exclude_current()
+                return
             elif key in [27, ord("q"), ord("Q")]: return None
 
 

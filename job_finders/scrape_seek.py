@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from datetime import datetime, timedelta
@@ -40,9 +39,8 @@ def setup_driver():
     options.add_argument("--width=1920")
     options.add_argument("--height=1080")
     options.set_preference("general.useragent.override", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv=109.0) Gecko/20100101 Firefox/115.0")
-    
-    service = Service(executable_path="/usr/local/bin/geckodriver")
-    driver = webdriver.Firefox(options=options, service=service)
+
+    driver = webdriver.Firefox(options=options)
     return driver
 
 def get(url, max_pages=200):
